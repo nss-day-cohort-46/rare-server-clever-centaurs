@@ -12,8 +12,8 @@ CREATE TABLE "Posts" (
   "title" varchar,
   "publication_date" date,
   "content" varchar,
-   FOREIGN KEY(`user_id`) REFERENCES `Users`(`id`),
-   FOREIGN KEY(`category_id`) REFERENCES `Categories`(`id`)
+  FOREIGN KEY(`user_id`) REFERENCES `Users`(`id`),
+  FOREIGN KEY(`category_id`) REFERENCES `Categories`(`id`)
 );
 CREATE TABLE "Comments" (
   "id" INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -38,52 +38,54 @@ CREATE TABLE "Categories" (
   "id" INTEGER PRIMARY KEY AUTOINCREMENT,
   "label" varchar
 );
-
-
-INSERT INTO `Tags` VALUES (null, "soft");
-INSERT INTO `Tags` VALUES (null, "limber");
-INSERT INTO `Tags` VALUES (null, "flexible");
-INSERT INTO `Tags` VALUES (null, "pretzel");
-
-INSERT INTO `PostTags` VALUES (null, 1, 1);
-INSERT INTO `PostTags` VALUES (null, 2, 2);
-INSERT INTO `PostTags` VALUES (null, 3, 3);
-INSERT INTO `PostTags` VALUES (null, 4, 4);
-
-
+INSERT INTO `Tags`
+VALUES (null, "soft");
+INSERT INTO `Tags`
+VALUES (null, "limber");
+INSERT INTO `Tags`
+VALUES (null, "flexible");
+INSERT INTO `Tags`
+VALUES (null, "pretzel");
+INSERT INTO `PostTags`
+VALUES (null, 1, 1);
+INSERT INTO `PostTags`
+VALUES (null, 2, 2);
+INSERT INTO `PostTags`
+VALUES (null, 3, 3);
+INSERT INTO `PostTags`
+VALUES (null, 4, 4);
 INSERT INTO `Users`
 VALUES(
-        null,
-        "Britt",
-        "Pot",
-        "Big Pimpin",
-        "bp@email.com"
-    );
+    null,
+    "Britt",
+    "Pot",
+    "Big Pimpin",
+    "bp@email.com"
+  );
 INSERT INTO `Users`
 VALUES(
-        null,
-        "Kylie",
-        "Bee",
-        "Lil Pimpin",
-        "kb@email.com"
-    );
+    null,
+    "Kylie",
+    "Bee",
+    "Lil Pimpin",
+    "kb@email.com"
+  );
 INSERT INTO `Users`
 VALUES(
-        null,
-        "Trent",
-        "Sis",
-        "Big Nappin",
-        "ts@email.com"
-    );
+    null,
+    "Trent",
+    "Sis",
+    "Big Nappin",
+    "ts@email.com"
+  );
 INSERT INTO `Users`
 VALUES(
-        null,
-        "Nicole",
-        "Tat",
-        "Lil Devil",
-        "nt@email.com"
-    );
-
+    null,
+    "Nicole",
+    "Tat",
+    "Lil Devil",
+    "nt@email.com"
+  );
 INSERT INTO `posts`
 VALUES(
     null,
@@ -103,8 +105,7 @@ I'm coming to get ya, I'm coming to get ya
 Spitting out lyrics, homie, I'll wet ya
 I came to get down, I came to get down
 So get out your seat and jump around!"
-);
-
+  );
 INSERT INTO `posts`
 VALUES(
     null,
@@ -118,8 +119,7 @@ I never meant to cause you any pain
 I only wanted to one time to see you laughing
 I only wanted to see you
 Laughing in the purple rain"
-);
-
+  );
 INSERT INTO `posts`
 VALUES(
     null,
@@ -134,8 +134,7 @@ And so I wake in the morning and I step outside
 And I take a deep breath and I get real high
 And I scream from the top of my lungs
 Whats going on?"
-);
-
+  );
 INSERT INTO `posts`
 VALUES(
     null,
@@ -167,16 +166,22 @@ And hear your voice of treason
 Will you come home and stop this pain tonight?
 Stop this pain tonight
 "
-);
-
-    INSERT INTO `Comments`
+  );
+INSERT INTO `Comments`
 VALUES(null, 1, 2, "This changed my world.");
-
 INSERT INTO `Comments`
 VALUES(null, 1, 1, "lol u suk");
-
 INSERT INTO `Comments`
 VALUES(null, 2, 3, "FIRST COMMENT");
-
 INSERT INTO `Comments`
 VALUES(null, 2, 4, "MIND=BLOWN");
+INSERT INTO `Categories`
+VALUES (null, "Sports");
+INSERT INTO `Categories`
+VALUES (null, "Food");
+INSERT INTO `Categories`
+VALUES (null, "Technology");
+INSERT INTO `Categories`
+VALUES (null, "Plants");
+SELECT *
+FROM Categories

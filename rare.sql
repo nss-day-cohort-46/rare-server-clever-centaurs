@@ -50,3 +50,36 @@ INSERT INTO `PostTags` VALUES (null, 2, 2);
 INSERT INTO `PostTags` VALUES (null, 3, 3);
 INSERT INTO `PostTags` VALUES (null, 4, 4);
 
+
+INSERT INTO `Users`
+VALUES(
+        null,
+        "Britt",
+        "Pot",
+        "Big Pimpin",
+        "bp@email.com"
+    );
+INSERT INTO `Users`
+VALUES(
+        null,
+        "Kylie",
+        "Bee",
+        "Lil Pimpin",
+        "kb@email.com"
+    );
+INSERT INTO `Users`
+VALUES(
+        null,
+        "Trent",
+        "Sis",
+        "Big Nappin",
+        "ts@email.com"
+    );
+INSERT INTO `Users`
+VALUES(
+        null,
+        "Nicole",
+        "Tat",
+        "Lil Devil",
+        "nt@email.com"
+    );

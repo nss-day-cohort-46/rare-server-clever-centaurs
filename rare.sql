@@ -70,3 +70,15 @@ VALUES(
         "Lil Devil",
         "nt@email.com"
     );
+
+    INSERT INTO `Comments`
+VALUES(null, 1, 2, "This changed my world.");
+
+INSERT INTO `Comments`
+VALUES(null, 1, 1, "lol u suk");
+
+INSERT INTO `Comments`
+VALUES(null, 2, 3, "FIRST COMMENT");
+
+INSERT INTO `Comments`
+VALUES(null, 2, 4, "MIND=BLOWN");

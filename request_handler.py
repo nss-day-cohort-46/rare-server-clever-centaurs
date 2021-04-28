@@ -3,6 +3,8 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 
 from users import register_user
 
+from posts import update_post
+
 
 
 class HandleRequests(BaseHTTPRequestHandler):
@@ -58,6 +60,19 @@ class HandleRequests(BaseHTTPRequestHandler):
             new_item = register_user(post_body)
 
         self.wfile.write(new_item.encode())
+
+    def do_PUT(self):
+        self._set_headers(204)
+        content_len = int(self.headers.get('content-length', 0))
+        post_body = self.rfile.read(content_len)
+        post_body = json.loads(post_body)
+
+        (resource, id) = self.parse_url(self.path)
+        success = False
+        if resource == "posts":
+            success = update_post(id, post_body)
+
+        self.wfile.write("".encode())
 
 
 

@@ -183,5 +183,13 @@ INSERT INTO `Categories`
 VALUES (null, "Technology");
 INSERT INTO `Categories`
 VALUES (null, "Plants");
+
 SELECT *
-FROM Categories
+FROM Users
+
+ALTER TABLE Users
+ADD "password" VARCHAR
+
+UPDATE Users
+SET "password" = "123"
+WHERE id = 1

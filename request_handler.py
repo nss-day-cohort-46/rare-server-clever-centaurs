@@ -1,8 +1,7 @@
 import json
 from http.server import BaseHTTPRequestHandler, HTTPServer
 
-from users import register_user
-
+from users import register_user, get_users_by_login
 
 
 class HandleRequests(BaseHTTPRequestHandler):
@@ -17,7 +16,7 @@ class HandleRequests(BaseHTTPRequestHandler):
             key = pair[0]  # 'email'
             value = pair[1]  # 'jenna@solis.com'
 
-            return ( resource, key, value )
+            return (resource, key, value)
 
         else:
             id = None
@@ -41,8 +40,10 @@ class HandleRequests(BaseHTTPRequestHandler):
     def do_OPTIONS(self):
         self.send_response(200)
         self.send_header('Access-Control-Allow-Origin', '*')
-        self.send_header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE')
-        self.send_header('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type, Accept')
+        self.send_header('Access-Control-Allow-Methods',
+                         'GET, POST, PUT, DELETE')
+        self.send_header('Access-Control-Allow-Headers',
+                         'X-Requested-With, Content-Type, Accept')
         self.end_headers()
 
     def do_POST(self):
@@ -57,16 +58,11 @@ class HandleRequests(BaseHTTPRequestHandler):
         if resource == "register":
             new_item = register_user(post_body)
 
+        if resource == "login":
+            new_item = get_users_by_login(
+                post_body['email'], post_body['password'])
+
         self.wfile.write(new_item.encode())
-
-
-
-
-
-
-
-
-
 
 
 def main():

@@ -1,5 +1,6 @@
 import sqlite3
 import json
+from models import User
 
 
 def register_user(new_user):
@@ -29,3 +30,25 @@ def register_user(new_user):
         }
 
     return json.dumps(response_object)
+
+
+def get_users_by_login(email, password):
+    with sqlite3.connect("./rare.db") as conn:
+        conn.row_factory = sqlite3.Row
+        db_cursor = conn.cursor()
+
+        db_cursor.execute("""
+        SELECT
+            u.id,
+            u.email,
+            u.password
+        from Users u
+        WHERE u.email = ? 
+        AND u.password = ?
+        """, (email, password))
+
+        data = db_cursor.fetchone()
+
+        if data['id']:
+            user_auth = {'valid': True, 'token': data['id']}
+            return json.dumps(user_auth)

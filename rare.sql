@@ -38,6 +38,7 @@ CREATE TABLE "Categories" (
   "id" INTEGER PRIMARY KEY AUTOINCREMENT,
   "label" varchar
 );
+
 INSERT INTO `Tags`
 VALUES (null, "soft");
 INSERT INTO `Tags`
@@ -54,6 +55,7 @@ INSERT INTO `PostTags`
 VALUES (null, 3, 3);
 INSERT INTO `PostTags`
 VALUES (null, 4, 4);
+
 INSERT INTO `Users`
 VALUES(
     null,
@@ -185,7 +187,7 @@ INSERT INTO `Categories`
 VALUES (null, "Plants");
 
 SELECT *
-FROM Users
+FROM Posts
 
 ALTER TABLE Users
 ADD "password" VARCHAR

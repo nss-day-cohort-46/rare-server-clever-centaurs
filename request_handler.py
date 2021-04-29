@@ -2,6 +2,8 @@ import json
 from http.server import BaseHTTPRequestHandler, HTTPServer
 
 from users import register_user, get_users_by_login
+from posts import (get_all_posts,
+                    get_post_by_id )
 
 
 class HandleRequests(BaseHTTPRequestHandler):
@@ -57,13 +59,29 @@ class HandleRequests(BaseHTTPRequestHandler):
         new_item = None
         if resource == "register":
             new_item = register_user(post_body)
-
+            
         if resource == "login":
             new_item = get_users_by_login(
                 post_body['email'], post_body['password'])
 
         self.wfile.write(new_item.encode())
+        
 
+    def do_GET(self):
+        self._set_headers(200)
+        response = {}
+        parsed = self.parse_url(self.path)
+        if len(parsed) == 2:
+            ( resource, id ) = parsed
+
+            if resource == "posts":
+                if id is not None: 
+                    response = get_post_by_id(id)
+                else:
+                    response = get_all_posts()
+
+            self.wfile.write(f"{response}".encode())
+            
 
 def main():
     host = ''

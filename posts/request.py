@@ -117,7 +117,7 @@ def update_post(id, new_post):
         new_post['category_id'], 
         new_post['title'], 
         new_post['publication_date'], 
-        new_post['content']))
+        new_post['content'], id, ))
 
         rows_affected = db_cursor.rowcount
     if rows_affected == 0:

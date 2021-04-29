@@ -1,6 +1,6 @@
 import sqlite3
 import json
-from models import Category
+from models import Category, category
 
 
 def get_all_categories():
@@ -25,3 +25,23 @@ def get_all_categories():
             categories.append(category.__dict__)
 
         return json.dumps(categories)
+
+
+def get_single_category(id):
+    with sqlite3.connect("./rare.db") as conn:
+        conn.row_factory = sqlite3.Row
+        db_cursor = conn.cursor()
+
+        db_cursor.execute("""
+        SELECT
+            c.id,
+            c.label
+        FROM Categories c
+        WHERE c.id = ?
+        """, (id, ))
+
+        data = db_cursor.fetchone()
+
+        category = Category(data['id'], data['label'])
+
+        return json.dumps(category.__dict__)

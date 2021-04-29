@@ -1,7 +1,7 @@
 import json
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from tags import get_all_tags, create_tag, delete_tag
-from categories import get_all_categories
+from categories import get_all_categories, get_single_category
 from users import register_user, get_users_by_login
 from posts import (get_all_posts,
                    get_post_by_id)
@@ -69,10 +69,10 @@ class HandleRequests(BaseHTTPRequestHandler):
                 else:
                     response = f"{get_all_posts()}"
             if resource == "categories":
-                # if id is not None:
-                #     response = get_post_by_id(id)
-                # else:
-                response = f"{get_all_categories()}"
+                if id is not None:
+                    response = get_single_category(id)
+                else:
+                    response = f"{get_all_categories()}"
 
         self.wfile.write(response.encode())
 

@@ -1,8 +1,6 @@
 import sqlite3
 import json
-
 from models import Post
-
 
 def get_all_posts():
     # Open a connection to the database
@@ -108,3 +106,4 @@ def update_post(id, new_post):
     else:
         # Forces 204 response by main module
         return True
+        return json.dumps(post.__dict__)

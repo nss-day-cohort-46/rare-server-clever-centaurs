@@ -1,9 +1,10 @@
 import json
 from http.server import BaseHTTPRequestHandler, HTTPServer
 
-from users import register_user
 
 from posts import (get_all_posts, get_post_by_id, update_post)
+
+from users import register_user, get_users_by_login
 
 
 
@@ -19,7 +20,7 @@ class HandleRequests(BaseHTTPRequestHandler):
             key = pair[0]  # 'email'
             value = pair[1]  # 'jenna@solis.com'
 
-            return ( resource, key, value )
+            return (resource, key, value)
 
         else:
             id = None
@@ -43,8 +44,10 @@ class HandleRequests(BaseHTTPRequestHandler):
     def do_OPTIONS(self):
         self.send_response(200)
         self.send_header('Access-Control-Allow-Origin', '*')
-        self.send_header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE')
-        self.send_header('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type, Accept')
+        self.send_header('Access-Control-Allow-Methods',
+                         'GET, POST, PUT, DELETE')
+        self.send_header('Access-Control-Allow-Headers',
+                         'X-Requested-With, Content-Type, Accept')
         self.end_headers()
 
     def do_GET(self):
@@ -72,8 +75,13 @@ class HandleRequests(BaseHTTPRequestHandler):
         new_item = None
         if resource == "register":
             new_item = register_user(post_body)
+            
+        if resource == "login":
+            new_item = get_users_by_login(
+                post_body['email'], post_body['password'])
 
         self.wfile.write(new_item.encode())
+        
 
     def do_PUT(self):
         self._set_headers(204)
@@ -88,15 +96,21 @@ class HandleRequests(BaseHTTPRequestHandler):
 
         self.wfile.write("".encode())
 
+    def do_GET(self):
+        self._set_headers(200)
+        response = {}
+        parsed = self.parse_url(self.path)
+        if len(parsed) == 2:
+            ( resource, id ) = parsed
 
+            if resource == "posts":
+                if id is not None: 
+                    response = get_post_by_id(id)
+                else:
+                    response = get_all_posts()
 
-
-
-
-
-
-
-
+            self.wfile.write(f"{response}".encode())
+            
 
 def main():
     host = ''

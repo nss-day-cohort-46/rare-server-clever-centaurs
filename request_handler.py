@@ -1,5 +1,6 @@
 import json
 from http.server import BaseHTTPRequestHandler, HTTPServer
+from tags.request import create_tag
 from tags import get_all_tags
 
 from users import register_user
@@ -75,6 +76,9 @@ class HandleRequests(BaseHTTPRequestHandler):
         new_item = None
         if resource == "register":
             new_item = register_user(post_body)
+        
+        if resource =="tag":
+            new_item = create_tag(post_body)
 
         self.wfile.write(new_item.encode())
 

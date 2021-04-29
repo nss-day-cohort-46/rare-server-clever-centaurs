@@ -3,7 +3,7 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 
 from users import register_user
 
-from posts import update_post
+from posts import (get_all_posts, get_post_by_id, update_post)
 
 
 
@@ -46,6 +46,20 @@ class HandleRequests(BaseHTTPRequestHandler):
         self.send_header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE')
         self.send_header('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type, Accept')
         self.end_headers()
+
+    def do_GET(self):
+        self._set_headers(200)
+        response = {}
+        parsed = self.parse_url(self.path)
+        if len(parsed) == 2:
+            ( resource, id ) = parsed
+
+            if resource == "posts":
+                if id is not None: 
+                    response = get_post_by_id(id)
+                else:
+                    response = get_all_posts()
+            self.wfile.write(f"{response}".encode())
 
     def do_POST(self):
         self._set_headers(201)

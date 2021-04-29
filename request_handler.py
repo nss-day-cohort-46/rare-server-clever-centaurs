@@ -1,10 +1,11 @@
 import json
 from http.server import BaseHTTPRequestHandler, HTTPServer
+from tags.request import create_tag
+from tags import get_all_tags
 
 from users import register_user, get_users_by_login
 from posts import (get_all_posts,
                     get_post_by_id )
-
 
 class HandleRequests(BaseHTTPRequestHandler):
     def parse_url(self, path):
@@ -48,6 +49,23 @@ class HandleRequests(BaseHTTPRequestHandler):
                          'X-Requested-With, Content-Type, Accept')
         self.end_headers()
 
+        # Here's a method on the class that overrides the parent's method.
+    # It handles any GET request.
+    def do_GET(self):
+        self._set_headers(200)
+        response = {}  # Default response
+
+        # Parse the URL and capture the tuple that is returned
+        parsed = self.parse_url(self.path)
+
+        if len(parsed) == 2:
+            (resource, id) = parsed
+             #fixed tag into tags
+            if resource == "tags":
+                    response = f"{get_all_tags()}"
+
+        self.wfile.write(response.encode())
+
     def do_POST(self):
         self._set_headers(201)
         content_len = int(self.headers.get('content-length', 0))
@@ -59,6 +77,9 @@ class HandleRequests(BaseHTTPRequestHandler):
         new_item = None
         if resource == "register":
             new_item = register_user(post_body)
+        
+        if resource =="tag":
+            new_item = create_tag(post_body)
             
         if resource == "login":
             new_item = get_users_by_login(

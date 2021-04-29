@@ -194,4 +194,5 @@ ADD "password" VARCHAR
 
 UPDATE Users
 SET "password" = "123"
-WHERE id = 1
+
+

@@ -1,8 +1,9 @@
 import json
 from http.server import BaseHTTPRequestHandler, HTTPServer
+from posts.request import add_post
 
 
-from posts import (get_all_posts, get_post_by_id, update_post)
+from posts import (get_all_posts, get_post_by_id, update_post, add_post)
 
 from users import register_user, get_users_by_login
 
@@ -80,6 +81,10 @@ class HandleRequests(BaseHTTPRequestHandler):
             new_item = get_users_by_login(
                 post_body['email'], post_body['password'])
 
+        if resource == "posts":
+            new_item = add_post(post_body)
+
+
         self.wfile.write(new_item.encode())
         
 
@@ -96,20 +101,6 @@ class HandleRequests(BaseHTTPRequestHandler):
 
         self.wfile.write("".encode())
 
-    def do_GET(self):
-        self._set_headers(200)
-        response = {}
-        parsed = self.parse_url(self.path)
-        if len(parsed) == 2:
-            ( resource, id ) = parsed
-
-            if resource == "posts":
-                if id is not None: 
-                    response = get_post_by_id(id)
-                else:
-                    response = get_all_posts()
-
-            self.wfile.write(f"{response}".encode())
             
 
 def main():

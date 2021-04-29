@@ -59,7 +59,7 @@ class HandleRequests(BaseHTTPRequestHandler):
         if len(parsed) == 2:
             (resource, id) = parsed
 
-            if resource == "tags":
+            if resource == "tag":
                     response = f"{get_all_tags()}"
 
         self.wfile.write(response.encode())
@@ -76,7 +76,7 @@ class HandleRequests(BaseHTTPRequestHandler):
         if resource == "register":
             new_item = register_user(post_body)
         
-        if resource =="tag":
+        if resource =="tags":
             new_item = create_tag(post_body)
 
         self.wfile.write(new_item.encode())

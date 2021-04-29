@@ -1,8 +1,8 @@
 import json
 from http.server import BaseHTTPRequestHandler, HTTPServer
+from tags import get_all_tags
 
 from users import register_user
-
 
 
 class HandleRequests(BaseHTTPRequestHandler):
@@ -17,7 +17,7 @@ class HandleRequests(BaseHTTPRequestHandler):
             key = pair[0]  # 'email'
             value = pair[1]  # 'jenna@solis.com'
 
-            return ( resource, key, value )
+            return (resource, key, value)
 
         else:
             id = None
@@ -41,9 +41,28 @@ class HandleRequests(BaseHTTPRequestHandler):
     def do_OPTIONS(self):
         self.send_response(200)
         self.send_header('Access-Control-Allow-Origin', '*')
-        self.send_header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE')
-        self.send_header('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type, Accept')
+        self.send_header('Access-Control-Allow-Methods',
+                         'GET, POST, PUT, DELETE')
+        self.send_header('Access-Control-Allow-Headers',
+                         'X-Requested-With, Content-Type, Accept')
         self.end_headers()
+
+        # Here's a method on the class that overrides the parent's method.
+    # It handles any GET request.
+    def do_GET(self):
+        self._set_headers(200)
+        response = {}  # Default response
+
+        # Parse the URL and capture the tuple that is returned
+        parsed = self.parse_url(self.path)
+
+        if len(parsed) == 2:
+            (resource, id) = parsed
+
+            if resource == "tags":
+                    response = f"{get_all_tags()}"
+
+        self.wfile.write(response.encode())
 
     def do_POST(self):
         self._set_headers(201)
@@ -58,15 +77,6 @@ class HandleRequests(BaseHTTPRequestHandler):
             new_item = register_user(post_body)
 
         self.wfile.write(new_item.encode())
-
-
-
-
-
-
-
-
-
 
 
 def main():

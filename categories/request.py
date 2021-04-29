@@ -1,6 +1,6 @@
 import sqlite3
 import json
-from models import Category, category
+from models import Category
 
 
 def get_all_categories():
@@ -13,6 +13,7 @@ def get_all_categories():
             c.id,
             c.label
         FROM Categories c
+        ORDER BY label ASC
         """)
 
         categories = []

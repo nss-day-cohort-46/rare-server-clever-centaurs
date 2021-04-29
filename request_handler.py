@@ -70,7 +70,7 @@ class HandleRequests(BaseHTTPRequestHandler):
                     response = f"{get_all_posts()}"
             if resource == "categories":
                 if id is not None:
-                    response = get_single_category(id)
+                    response = f"{get_single_category(id)}"
                 else:
                     response = f"{get_all_categories()}"
 

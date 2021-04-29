@@ -59,7 +59,7 @@ class HandleRequests(BaseHTTPRequestHandler):
 
         if len(parsed) == 2:
             (resource, id) = parsed
-
+             #fixed tag into tags
             if resource == "tags":
                     response = f"{get_all_tags()}"
 

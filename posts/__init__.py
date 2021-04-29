@@ -1,0 +1,1 @@
+from .request import get_all_posts, get_post_by_id

@@ -1,7 +1,6 @@
 import json
 from http.server import BaseHTTPRequestHandler, HTTPServer
-from tags.request import create_tag
-from tags import get_all_tags
+from tags import get_all_tags, create_tag, delete_tag
 
 from users import register_user, get_users_by_login
 from posts import (get_all_posts,
@@ -63,6 +62,12 @@ class HandleRequests(BaseHTTPRequestHandler):
              #fixed tag into tags
             if resource == "tags":
                     response = f"{get_all_tags()}"
+            if resource == "posts":
+                if id is not None: 
+                    response = get_post_by_id(id)
+                else:
+                    response = f"{get_all_posts()}"
+                    
 
         self.wfile.write(response.encode())
 
@@ -78,7 +83,7 @@ class HandleRequests(BaseHTTPRequestHandler):
         if resource == "register":
             new_item = register_user(post_body)
         
-        if resource =="tag":
+        if resource =="tags":
             new_item = create_tag(post_body)
             
         if resource == "login":
@@ -87,22 +92,19 @@ class HandleRequests(BaseHTTPRequestHandler):
 
         self.wfile.write(new_item.encode())
         
-
-    def do_GET(self):
-        self._set_headers(200)
-        response = {}
-        parsed = self.parse_url(self.path)
-        if len(parsed) == 2:
-            ( resource, id ) = parsed
-
-            if resource == "posts":
-                if id is not None: 
-                    response = get_post_by_id(id)
-                else:
-                    response = get_all_posts()
-
-            self.wfile.write(f"{response}".encode())
             
+    def do_DELETE(self):
+            # Set a 204 response code
+            self._set_headers(204)
+
+            # Parse the URL
+            (resource, id) = self.parse_url(self.path)
+
+            # Delete a single tag from the list
+            if resource == "tags":
+                delete_tag(id)
+
+            self.wfile.write("".encode())
 
 def main():
     host = ''

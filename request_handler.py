@@ -1,7 +1,6 @@
 import json
 from http.server import BaseHTTPRequestHandler, HTTPServer
-from tags.request import create_tag
-from tags import get_all_tags
+from tags import get_all_tags, create_tag, delete_tag
 
 from users import register_user
 
@@ -82,6 +81,18 @@ class HandleRequests(BaseHTTPRequestHandler):
 
         self.wfile.write(new_item.encode())
 
+    def do_DELETE(self):
+            # Set a 204 response code
+            self._set_headers(204)
+
+            # Parse the URL
+            (resource, id) = self.parse_url(self.path)
+
+            # Delete a single tag from the list
+            if resource == "tags":
+                delete_tag(id)
+
+            self.wfile.write("".encode())
 
 def main():
     host = ''

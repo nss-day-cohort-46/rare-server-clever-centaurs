@@ -1,5 +1,6 @@
 import json
 from http.server import BaseHTTPRequestHandler, HTTPServer
+from posts.request import get_posts_by_user_id
 from tags import get_all_tags, create_tag, delete_tag
 
 from users import register_user, get_users_by_login
@@ -13,9 +14,9 @@ class HandleRequests(BaseHTTPRequestHandler):
 
         if "?" in resource:
             param = resource.split("?")[1]  # email=jenna@solis.com
-            resource = resource.split("?")[0]  # 'customers'
+            resource = resource.split("?")[0]  # 'posts'
             pair = param.split("=")  # [ 'email', 'jenna@solis.com' ]
-            key = pair[0]  # 'email'
+            key = pair[0]  # 'user_id'
             value = pair[1]  # 'jenna@solis.com'
 
             return (resource, key, value)
@@ -64,10 +65,14 @@ class HandleRequests(BaseHTTPRequestHandler):
                     response = f"{get_all_tags()}"
             if resource == "posts":
                 if id is not None: 
-                    response = get_post_by_id(id)
+                    response = f"{get_post_by_id(id)}"
                 else:
                     response = f"{get_all_posts()}"
-                    
+        elif len(parsed) == 3:
+            (resource, key, value) = parsed
+            if resource == "posts":
+                    response = f"{get_posts_by_user_id(value)}"
+            
 
         self.wfile.write(response.encode())
 

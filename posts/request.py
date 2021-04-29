@@ -1,16 +1,13 @@
 import sqlite3
 import json
-from models import Post
+from models import Post, User
 
 def get_all_posts():
-    # Open a connection to the database
     with sqlite3.connect("./rare.db") as conn:
-
         # Just use these. It's a Black Box.
         conn.row_factory = sqlite3.Row
         db_cursor = conn.cursor()
 
-        # Write the SQL query to get the information you want
         db_cursor.execute("""
             SELECT
                 p.id,
@@ -24,7 +21,6 @@ def get_all_posts():
 
         # Initialize an empty list to hold all post representations
         posts = []
-
         # Convert rows of data into a Python list
         dataset = db_cursor.fetchall()
 
@@ -80,3 +76,48 @@ def get_post_by_id(id):
                             data['publication_date'], data['content'])
 
         return json.dumps(post.__dict__)
+
+
+def get_posts_by_user_id(user_id):
+    with sqlite3.connect("./rare.db") as conn:
+        conn.row_factory = sqlite3.Row
+        db_cursor = conn.cursor()
+        
+        db_cursor.execute("""
+            SELECT
+                p.id,
+                p.user_id,
+                p.category_id,
+                p.title,
+                p.publication_date,
+                p.content,
+                u.first_name,
+                u.last_name,
+                u.display_name,
+                u.email,
+                u.password
+            FROM Posts p
+            JOIN users u ON u.id = p.user_id
+            WHERE p.user_id = ? 
+            """, (user_id, ))
+
+        # Initialize an empty list to hold all post representations
+        posts = []
+        # Convert rows of data into a Python list
+        dataset = db_cursor.fetchall()
+
+        for row in dataset:
+            # Create an post instance from the current row
+            post = Post(row['id'], row['user_id'], row['category_id'], row['title'],
+                            row['publication_date'], row['content'])
+
+            # Create a User instance from the current row
+            user = User(row['id'], row['first_name'], row['last_name'], row['display_name'], row['email'], row['password'])
+
+            post.user = user.__dict__
+
+            # Add the dictionary representation of the post to the list
+            posts.append(post.__dict__)
+
+    # Use `json` package to properly serialize list as JSON
+    return json.dumps(posts)

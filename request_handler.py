@@ -1,14 +1,10 @@
 import json
 from http.server import BaseHTTPRequestHandler, HTTPServer
-
-
-from posts import (get_all_posts, get_post_by_id, update_post, add_post)
-
-from users import register_user, get_users_by_login
-
+from posts.request import get_posts_by_user_id
 from tags import get_all_tags, create_tag, delete_tag
-from categories import get_all_categories, get_single_category
+from posts import (get_all_posts, get_post_by_id, update_post, add_post)
 from users import register_user, get_users_by_login
+from categories import get_all_categories, get_single_category
 
 
 class HandleRequests(BaseHTTPRequestHandler):
@@ -18,9 +14,9 @@ class HandleRequests(BaseHTTPRequestHandler):
 
         if "?" in resource:
             param = resource.split("?")[1]  # email=jenna@solis.com
-            resource = resource.split("?")[0]  # 'customers'
+            resource = resource.split("?")[0]  # 'posts'
             pair = param.split("=")  # [ 'email', 'jenna@solis.com' ]
-            key = pair[0]  # 'email'
+            key = pair[0]  # 'user_id'
             value = pair[1]  # 'jenna@solis.com'
 
             return (resource, key, value)
@@ -65,16 +61,22 @@ class HandleRequests(BaseHTTPRequestHandler):
             # fixed tag into tags
             if resource == "tags":
                 response = f"{get_all_tags()}"
-            if resource == "posts":
-                if id is not None:
-                    response = get_post_by_id(id)
-                else:
-                    response = f"{get_all_posts()}"
             if resource == "categories":
                 if id is not None:
                     response = f"{get_single_category(id)}"
                 else:
-                    response = f"{get_all_categories()}"
+                    response = f"{get_all_categories()}"  
+            if resource == "posts":
+                if id is not None: 
+                    response = f"{get_post_by_id(id)}"
+                else:
+                    response = f"{get_all_posts()}"
+        elif len(parsed) == 3:
+            (resource, key, value) = parsed
+            if resource == "posts":
+                    response = f"{get_posts_by_user_id(value)}"
+        
+
 
         self.wfile.write(response.encode())
 

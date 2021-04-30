@@ -62,6 +62,3 @@ def create_category(new_category):
         id = db_cursor.lastrowid
         new_category['id'] = id
     return json.dumps(new_category)
-
-
-def

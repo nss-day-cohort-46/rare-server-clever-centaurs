@@ -2,10 +2,10 @@ import json
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from posts.request import get_posts_by_user_id
 from tags import get_all_tags, create_tag, delete_tag
-
+from posts import (get_all_posts, get_post_by_id, update_post, add_post)
 from users import register_user, get_users_by_login
-from posts import (get_all_posts,
-                    get_post_by_id )
+from categories import get_all_categories, get_single_category
+
 
 class HandleRequests(BaseHTTPRequestHandler):
     def parse_url(self, path):
@@ -49,8 +49,6 @@ class HandleRequests(BaseHTTPRequestHandler):
                          'X-Requested-With, Content-Type, Accept')
         self.end_headers()
 
-        # Here's a method on the class that overrides the parent's method.
-    # It handles any GET request.
     def do_GET(self):
         self._set_headers(200)
         response = {}  # Default response
@@ -60,9 +58,14 @@ class HandleRequests(BaseHTTPRequestHandler):
 
         if len(parsed) == 2:
             (resource, id) = parsed
-             #fixed tag into tags
+            # fixed tag into tags
             if resource == "tags":
-                    response = f"{get_all_tags()}"
+                response = f"{get_all_tags()}"
+            if resource == "categories":
+                if id is not None:
+                    response = f"{get_single_category(id)}"
+                else:
+                    response = f"{get_all_categories()}"  
             if resource == "posts":
                 if id is not None: 
                     response = f"{get_post_by_id(id)}"
@@ -72,7 +75,8 @@ class HandleRequests(BaseHTTPRequestHandler):
             (resource, key, value) = parsed
             if resource == "posts":
                     response = f"{get_posts_by_user_id(value)}"
-            
+        
+
 
         self.wfile.write(response.encode())
 
@@ -87,29 +91,45 @@ class HandleRequests(BaseHTTPRequestHandler):
         new_item = None
         if resource == "register":
             new_item = register_user(post_body)
-        
-        if resource =="tags":
+
+        if resource == "tags":
             new_item = create_tag(post_body)
-            
+
         if resource == "login":
             new_item = get_users_by_login(
                 post_body['email'], post_body['password'])
 
+        if resource == "posts":
+            new_item = add_post(post_body)
+
         self.wfile.write(new_item.encode())
-        
-            
+
+    def do_PUT(self):
+        self._set_headers(204)
+        content_len = int(self.headers.get('content-length', 0))
+        post_body = self.rfile.read(content_len)
+        post_body = json.loads(post_body)
+
+        (resource, id) = self.parse_url(self.path)
+        success = False
+        if resource == "posts":
+            success = update_post(id, post_body)
+
+        self.wfile.write("".encode())
+
     def do_DELETE(self):
-            # Set a 204 response code
-            self._set_headers(204)
+        # Set a 204 response code
+        self._set_headers(204)
 
-            # Parse the URL
-            (resource, id) = self.parse_url(self.path)
+        # Parse the URL
+        (resource, id) = self.parse_url(self.path)
 
-            # Delete a single tag from the list
-            if resource == "tags":
-                delete_tag(id)
+        # Delete a single tag from the list
+        if resource == "tags":
+            delete_tag(id)
 
-            self.wfile.write("".encode())
+        self.wfile.write("".encode())
+
 
 def main():
     host = ''

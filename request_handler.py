@@ -1,3 +1,4 @@
+from categories.request import update_category
 import json
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from tags import get_all_tags, create_tag, delete_tag, get_single_tag, update_tag
@@ -123,6 +124,19 @@ class HandleRequests(BaseHTTPRequestHandler):
         success = False
         if resource == "posts":
             success = update_post(id, post_body)
+        if resource == "tags":
+            success = update_tag(id, post_body)
+
+            if success:
+                self._set_headers(204)
+            else:
+                self._set_headers(404)
+        if resource == "categories":
+            success = update_category(id, post_body)
+            if success:
+                self._set_headers(204)
+            else:
+                self._set_headers(404)
 
         self.wfile.write("".encode())
 
@@ -137,29 +151,6 @@ class HandleRequests(BaseHTTPRequestHandler):
         if resource == "tags":
             delete_tag(id)
 
-        self.wfile.write("".encode())
-
-    def do_PUT(self):
-        self._set_headers(204)
-        content_len = int(self.headers.get('content-length', 0))
-        post_body = self.rfile.read(content_len)
-        post_body = json.loads(post_body)
-
-        # Parse the URL
-        (resource, id) = self.parse_url(self.path)
-
-        success = False
-
-        # edit a single post from the list check
-        if resource == "tags":
-            success = update_tag(id, post_body)
-
-            if success:
-                self._set_headers(204)
-            else:
-                self._set_headers(404)
-
-        # Encode the new animal and send in response
         self.wfile.write("".encode())
 
 

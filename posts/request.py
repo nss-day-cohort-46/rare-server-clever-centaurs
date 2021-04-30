@@ -84,15 +84,25 @@ def add_post(new_post):
         db_cursor = conn.cursor()
         db_cursor.execute("""
         INSERT INTO Posts
-            ( title, publication_date, content )
+            ( user_id, category_id, title, publication_date, content )
         VALUES 
-            ( ?, ?, ?);
-        """, (new_post['title'],
+            ( ?, ?, ?, ?, ? );
+        """, (new_post['user_id'],
+              new_post['category_id'],
+              new_post['title'],
               new_post['publication_date'],
               new_post['content']))
+
         id = db_cursor.lastrowid
         new_post['id'] = id
 
+        # for category in new_post['category_id']:
+        #     db_cursor.execute("""
+        #     INSERT INTO Categories
+        #         ( category_id )
+        #     VALUES
+        #         ( ?, ? );
+        #     """, (id, category))
     return json.dumps(new_post)
 
 

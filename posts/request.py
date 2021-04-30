@@ -94,12 +94,13 @@ def add_post(new_post):
         new_post['id'] = id
 
     return json.dumps(new_post)
- 
+
+
 def get_posts_by_user_id(user_id):
     with sqlite3.connect("./rare.db") as conn:
         conn.row_factory = sqlite3.Row
         db_cursor = conn.cursor()
-        
+
         db_cursor.execute("""
             SELECT
                 p.id,
@@ -126,10 +127,11 @@ def get_posts_by_user_id(user_id):
         for row in dataset:
             # Create an post instance from the current row
             post = Post(row['id'], row['user_id'], row['category_id'], row['title'],
-                            row['publication_date'], row['content'])
+                        row['publication_date'], row['content'])
 
             # Create a User instance from the current row
-            user = User(row['id'], row['first_name'], row['last_name'], row['display_name'], row['email'], row['password'])
+            user = User(row['id'], row['first_name'], row['last_name'],
+                        row['display_name'], row['email'], row['password'])
 
             post.user = user.__dict__
 

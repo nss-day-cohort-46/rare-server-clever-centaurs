@@ -50,15 +50,13 @@ def get_single_category(id):
 
 def create_category(new_category):
     with sqlite3.connect("./rare.db") as conn:
-        conn.row_factory = sqlite3.Row
         db_cursor = conn.cursor()
-
         db_cursor.execute("""
         INSERT INTO Categories
             (label)
         VALUES
             (?)
-        """, (new_category['label'],))
+        """, (new_category['label']))
         id = db_cursor.lastrowid
         new_category['id'] = id
     return json.dumps(new_category)

@@ -99,6 +99,7 @@ class HandleRequests(BaseHTTPRequestHandler):
 
         if resource == "categories":
             new_item = create_category(post_body)
+
         if resource == "posts":
             new_item = add_post(post_body)
 

@@ -48,11 +48,11 @@ def create_tag(new_tag):
     return json.dumps(new_tag)
 
 def update_tag(id, new_tag):
-    with sqlite3.connect("./picnic-fish.db") as conn:
+    with sqlite3.connect("./rare.db") as conn:
         db_cursor = conn.cursor()
 
         db_cursor.execute("""
-        UPDATE categories
+        UPDATE tags
             SET
                 label = ?
         WHERE id = ?

@@ -1,6 +1,6 @@
 import json
 from http.server import BaseHTTPRequestHandler, HTTPServer
-from tags import get_all_tags, create_tag, delete_tag
+from tags import get_all_tags, create_tag, delete_tag, get_single_tag
 from categories import get_all_categories, get_single_category
 from users import register_user, get_users_by_login
 from posts import (get_all_posts,
@@ -62,10 +62,13 @@ class HandleRequests(BaseHTTPRequestHandler):
             (resource, id) = parsed
             # fixed tag into tags
             if resource == "tags":
-                response = f"{get_all_tags()}"
+                if id is not None:
+                    response = f"{get_single_tag(id)}"
+                else:
+                    response = f"{get_all_tags()}"
             if resource == "posts":
                 if id is not None:
-                    response = get_post_by_id(id)
+                    response = f"{get_post_by_id(id)}"
                 else:
                     response = f"{get_all_posts()}"
             if resource == "categories":

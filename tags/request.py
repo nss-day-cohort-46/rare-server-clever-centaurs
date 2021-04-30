@@ -55,3 +55,22 @@ def delete_tag(id):
         DELETE FROM tags
         WHERE id = ?
         """, (id, ))
+
+def get_single_tag(id):
+    with sqlite3.connect("./rare.db") as conn:
+        conn.row_factory = sqlite3.Row
+        db_cursor = conn.cursor()
+
+        db_cursor.execute("""
+        SELECT
+            t.id,
+            t.label
+        FROM Tags t
+        WHERE t.id = ?
+        """, (id, ))
+
+        data = db_cursor.fetchone()
+
+        tag = Tag(data['id'], data['label'])
+
+        return json.dumps(tag.__dict__)

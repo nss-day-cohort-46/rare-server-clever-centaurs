@@ -2,6 +2,7 @@ import sqlite3
 import json
 from models import Post
 
+
 def get_all_posts():
     # Open a connection to the database
     with sqlite3.connect("./rare.db") as conn:
@@ -32,7 +33,7 @@ def get_all_posts():
 
             # Create an post instance from the current row
             post = Post(row['id'], row['user_id'], row['category_id'], row['title'],
-                            row['publication_date'], row['content'])
+                        row['publication_date'], row['content'])
 
             # # Create a User instance from the current row
             # user = User(
@@ -77,6 +78,52 @@ def get_post_by_id(id):
 
         # Create an post instance from the current row
         post = Post(data['id'], data['user_id'], data['category_id'], data['title'],
-                            data['publication_date'], data['content'])
+                    data['publication_date'], data['content'])
 
+        return json.dumps(post.__dict__)
+
+
+def add_post(new_post):
+    with sqlite3.connect("./rare.db") as conn:
+        db_cursor = conn.cursor()
+        db_cursor.execute("""
+        INSERT INTO Posts
+            ( title, publication_date, content )
+        VALUES 
+            ( ?, ?, ?);
+        """, (new_post['title'],
+              new_post['publication_date'],
+              new_post['content']))
+
+        id = db_cursor.lastrowid
+        new_post['id'] = id
+
+    return json.dumps(new_post)
+
+
+def update_post(id, new_post):
+    with sqlite3.connect("./rare.db") as conn:
+        db_cursor = conn.cursor()
+        db_cursor.execute("""
+        UPDATE Posts
+            SET 
+                user_id = ?,
+                category_id = ?,
+                title = ?,
+                publication_date = ?,
+                content = ?
+        WHERE id = ?
+        """, (new_post['user_id'],
+              new_post['category_id'],
+              new_post['title'],
+              new_post['publication_date'],
+              new_post['content'], id, ))
+
+        rows_affected = db_cursor.rowcount
+    if rows_affected == 0:
+        # Forces 404 response by main module
+        return False
+    else:
+        # Forces 204 response by main module
+        return True
         return json.dumps(post.__dict__)

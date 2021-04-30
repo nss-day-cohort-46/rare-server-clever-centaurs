@@ -1,7 +1,7 @@
 import json
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from tags import get_all_tags, create_tag, delete_tag
-from categories import get_all_categories, get_single_category
+from categories import get_all_categories, get_single_category, create_category
 from users import register_user, get_users_by_login
 from posts import (get_all_posts,
                    get_post_by_id)
@@ -94,6 +94,9 @@ class HandleRequests(BaseHTTPRequestHandler):
         if resource == "login":
             new_item = get_users_by_login(
                 post_body['email'], post_body['password'])
+
+        if resource == "categories":
+            new_item = create_category(post_body)
 
         self.wfile.write(new_item.encode())
 

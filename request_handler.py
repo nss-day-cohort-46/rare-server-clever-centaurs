@@ -1,8 +1,8 @@
-from categories.request import update_category
+from categories.request import delete_category
 import json
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from tags import get_all_tags, create_tag, delete_tag, get_single_tag, update_tag
-from categories import get_all_categories, get_single_category, create_category
+from categories import get_all_categories, get_single_category, create_category, update_category
 from posts.request import get_posts_by_user_id
 from posts import (get_all_posts, get_post_by_id, update_post, add_post)
 from users import register_user, get_users_by_login
@@ -150,6 +150,8 @@ class HandleRequests(BaseHTTPRequestHandler):
         # Delete a single tag from the list
         if resource == "tags":
             delete_tag(id)
+        if resource == "categories":
+            delete_category(id)
 
         self.wfile.write("".encode())
 

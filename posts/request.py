@@ -84,22 +84,33 @@ def add_post(new_post):
         db_cursor = conn.cursor()
         db_cursor.execute("""
         INSERT INTO Posts
-            ( title, publication_date, content )
+            ( user_id, category_id, title, publication_date, content )
         VALUES 
-            ( ?, ?, ?);
-        """, (new_post['title'],
+            ( ?, ?, ?, ?, ? );
+        """, (new_post['user_id'],
+              new_post['category_id'],
+              new_post['title'],
               new_post['publication_date'],
               new_post['content']))
+
         id = db_cursor.lastrowid
         new_post['id'] = id
 
+        # for category in new_post['category_id']:
+        #     db_cursor.execute("""
+        #     INSERT INTO Categories
+        #         ( category_id )
+        #     VALUES
+        #         ( ?, ? );
+        #     """, (id, category))
     return json.dumps(new_post)
- 
+
+
 def get_posts_by_user_id(user_id):
     with sqlite3.connect("./rare.db") as conn:
         conn.row_factory = sqlite3.Row
         db_cursor = conn.cursor()
-        
+
         db_cursor.execute("""
             SELECT
                 p.id,
@@ -126,10 +137,11 @@ def get_posts_by_user_id(user_id):
         for row in dataset:
             # Create an post instance from the current row
             post = Post(row['id'], row['user_id'], row['category_id'], row['title'],
-                            row['publication_date'], row['content'])
+                        row['publication_date'], row['content'])
 
             # Create a User instance from the current row
-            user = User(row['id'], row['first_name'], row['last_name'], row['display_name'], row['email'], row['password'])
+            user = User(row['id'], row['first_name'], row['last_name'],
+                        row['display_name'], row['email'], row['password'])
 
             post.user = user.__dict__
 

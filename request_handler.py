@@ -2,9 +2,9 @@ import json
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from tags import get_all_tags, create_tag, delete_tag, get_single_tag
 from categories import get_all_categories, get_single_category
+from posts.request import get_posts_by_user_id
+from posts import (get_all_posts, get_post_by_id, update_post, add_post)
 from users import register_user, get_users_by_login
-from posts import (get_all_posts,
-                   get_post_by_id)
 
 
 class HandleRequests(BaseHTTPRequestHandler):
@@ -14,9 +14,9 @@ class HandleRequests(BaseHTTPRequestHandler):
 
         if "?" in resource:
             param = resource.split("?")[1]  # email=jenna@solis.com
-            resource = resource.split("?")[0]  # 'customers'
+            resource = resource.split("?")[0]  # 'posts'
             pair = param.split("=")  # [ 'email', 'jenna@solis.com' ]
-            key = pair[0]  # 'email'
+            key = pair[0]  # 'user_id'
             value = pair[1]  # 'jenna@solis.com'
 
             return (resource, key, value)
@@ -49,8 +49,6 @@ class HandleRequests(BaseHTTPRequestHandler):
                          'X-Requested-With, Content-Type, Accept')
         self.end_headers()
 
-        # Here's a method on the class that overrides the parent's method.
-    # It handles any GET request.
     def do_GET(self):
         self._set_headers(200)
         response = {}  # Default response
@@ -75,7 +73,18 @@ class HandleRequests(BaseHTTPRequestHandler):
                 if id is not None:
                     response = f"{get_single_category(id)}"
                 else:
-                    response = f"{get_all_categories()}"
+                    response = f"{get_all_categories()}"  
+            if resource == "posts":
+                if id is not None: 
+                    response = f"{get_post_by_id(id)}"
+                else:
+                    response = f"{get_all_posts()}"
+        elif len(parsed) == 3:
+            (resource, key, value) = parsed
+            if resource == "posts":
+                    response = f"{get_posts_by_user_id(value)}"
+        
+
 
         self.wfile.write(response.encode())
 
@@ -98,7 +107,23 @@ class HandleRequests(BaseHTTPRequestHandler):
             new_item = get_users_by_login(
                 post_body['email'], post_body['password'])
 
+        if resource == "posts":
+            new_item = add_post(post_body)
+
         self.wfile.write(new_item.encode())
+
+    def do_PUT(self):
+        self._set_headers(204)
+        content_len = int(self.headers.get('content-length', 0))
+        post_body = self.rfile.read(content_len)
+        post_body = json.loads(post_body)
+
+        (resource, id) = self.parse_url(self.path)
+        success = False
+        if resource == "posts":
+            success = update_post(id, post_body)
+
+        self.wfile.write("".encode())
 
     def do_DELETE(self):
         # Set a 204 response code

@@ -1,13 +1,9 @@
 import json
 from http.server import BaseHTTPRequestHandler, HTTPServer
-
-
-from posts import (get_all_posts, get_post_by_id, update_post, add_post)
-
-from users import register_user, get_users_by_login
-
-from tags import get_all_tags, create_tag, delete_tag
+from tags import get_all_tags, create_tag, delete_tag, get_single_tag, update_tag
 from categories import get_all_categories, get_single_category, create_category
+from posts.request import get_posts_by_user_id
+from posts import (get_all_posts, get_post_by_id, update_post, add_post)
 from users import register_user, get_users_by_login
 
 
@@ -18,9 +14,9 @@ class HandleRequests(BaseHTTPRequestHandler):
 
         if "?" in resource:
             param = resource.split("?")[1]  # email=jenna@solis.com
-            resource = resource.split("?")[0]  # 'customers'
+            resource = resource.split("?")[0]  # 'posts'
             pair = param.split("=")  # [ 'email', 'jenna@solis.com' ]
-            key = pair[0]  # 'email'
+            key = pair[0]  # 'user_id'
             value = pair[1]  # 'jenna@solis.com'
 
             return (resource, key, value)
@@ -64,10 +60,13 @@ class HandleRequests(BaseHTTPRequestHandler):
             (resource, id) = parsed
             # fixed tag into tags
             if resource == "tags":
-                response = f"{get_all_tags()}"
+                if id is not None:
+                    response = f"{get_single_tag(id)}"
+                else:
+                    response = f"{get_all_tags()}"
             if resource == "posts":
                 if id is not None:
-                    response = get_post_by_id(id)
+                    response = f"{get_post_by_id(id)}"
                 else:
                     response = f"{get_all_posts()}"
             if resource == "categories":
@@ -75,6 +74,15 @@ class HandleRequests(BaseHTTPRequestHandler):
                     response = f"{get_single_category(id)}"
                 else:
                     response = f"{get_all_categories()}"
+            if resource == "posts":
+                if id is not None:
+                    response = f"{get_post_by_id(id)}"
+                else:
+                    response = f"{get_all_posts()}"
+        elif len(parsed) == 3:
+            (resource, key, value) = parsed
+            if resource == "posts":
+                response = f"{get_posts_by_user_id(value)}"
 
         self.wfile.write(response.encode())
 
@@ -129,6 +137,29 @@ class HandleRequests(BaseHTTPRequestHandler):
         if resource == "tags":
             delete_tag(id)
 
+        self.wfile.write("".encode())
+
+    def do_PUT(self):
+        self._set_headers(204)
+        content_len = int(self.headers.get('content-length', 0))
+        post_body = self.rfile.read(content_len)
+        post_body = json.loads(post_body)
+
+        # Parse the URL
+        (resource, id) = self.parse_url(self.path)
+
+        success = False
+
+        # edit a single post from the list check
+        if resource == "tags":
+            success = update_tag(id, post_body)
+
+            if success:
+                self._set_headers(204)
+            else:
+                self._set_headers(404)
+
+        # Encode the new animal and send in response
         self.wfile.write("".encode())
 
 

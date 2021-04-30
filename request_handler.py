@@ -1,6 +1,6 @@
 import json
 from http.server import BaseHTTPRequestHandler, HTTPServer
-from tags import get_all_tags, create_tag, delete_tag, get_single_tag
+from tags import get_all_tags, create_tag, delete_tag, get_single_tag, update_tag
 from categories import get_all_categories, get_single_category
 from posts.request import get_posts_by_user_id
 from posts import (get_all_posts, get_post_by_id, update_post, add_post)
@@ -138,6 +138,29 @@ class HandleRequests(BaseHTTPRequestHandler):
 
         self.wfile.write("".encode())
 
+    
+    def do_PUT(self):
+        self._set_headers(204)
+        content_len = int(self.headers.get('content-length', 0))
+        post_body = self.rfile.read(content_len)
+        post_body = json.loads(post_body)
+
+        # Parse the URL
+        (resource, id) = self.parse_url(self.path)
+
+        success = False
+
+            # edit a single post from the list check
+        if resource == "tags":
+            success =update_tag(id, post_body)
+
+            if success:
+                self._set_headers(204)
+            else:
+                self._set_headers(404)
+
+        # Encode the new animal and send in response
+        self.wfile.write("".encode())
 
 def main():
     host = ''

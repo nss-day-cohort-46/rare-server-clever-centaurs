@@ -1,10 +1,14 @@
 import json
 from http.server import BaseHTTPRequestHandler, HTTPServer
+
+
+from posts import (get_all_posts, get_post_by_id, update_post, add_post)
+
+from users import register_user, get_users_by_login
+
 from tags import get_all_tags, create_tag, delete_tag
 from categories import get_all_categories, get_single_category, create_category
 from users import register_user, get_users_by_login
-from posts import (get_all_posts,
-                   get_post_by_id)
 
 
 class HandleRequests(BaseHTTPRequestHandler):
@@ -49,8 +53,6 @@ class HandleRequests(BaseHTTPRequestHandler):
                          'X-Requested-With, Content-Type, Accept')
         self.end_headers()
 
-        # Here's a method on the class that overrides the parent's method.
-    # It handles any GET request.
     def do_GET(self):
         self._set_headers(200)
         response = {}  # Default response
@@ -97,8 +99,23 @@ class HandleRequests(BaseHTTPRequestHandler):
 
         if resource == "categories":
             new_item = create_category(post_body)
+        if resource == "posts":
+            new_item = add_post(post_body)
 
         self.wfile.write(new_item.encode())
+
+    def do_PUT(self):
+        self._set_headers(204)
+        content_len = int(self.headers.get('content-length', 0))
+        post_body = self.rfile.read(content_len)
+        post_body = json.loads(post_body)
+
+        (resource, id) = self.parse_url(self.path)
+        success = False
+        if resource == "posts":
+            success = update_post(id, post_body)
+
+        self.wfile.write("".encode())
 
     def do_DELETE(self):
         # Set a 204 response code

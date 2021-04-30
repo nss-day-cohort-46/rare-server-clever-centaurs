@@ -1,12 +1,14 @@
 import json
 from http.server import BaseHTTPRequestHandler, HTTPServer
-from posts.request import add_post
 
 
 from posts import (get_all_posts, get_post_by_id, update_post, add_post)
 
 from users import register_user, get_users_by_login
 
+from tags import get_all_tags, create_tag, delete_tag
+from categories import get_all_categories, get_single_category
+from users import register_user, get_users_by_login
 
 
 class HandleRequests(BaseHTTPRequestHandler):
@@ -53,17 +55,28 @@ class HandleRequests(BaseHTTPRequestHandler):
 
     def do_GET(self):
         self._set_headers(200)
-        response = {}
-        parsed = self.parse_url(self.path)
-        if len(parsed) == 2:
-            ( resource, id ) = parsed
+        response = {}  # Default response
 
+        # Parse the URL and capture the tuple that is returned
+        parsed = self.parse_url(self.path)
+
+        if len(parsed) == 2:
+            (resource, id) = parsed
+            # fixed tag into tags
+            if resource == "tags":
+                response = f"{get_all_tags()}"
             if resource == "posts":
-                if id is not None: 
+                if id is not None:
                     response = get_post_by_id(id)
                 else:
-                    response = get_all_posts()
-            self.wfile.write(f"{response}".encode())
+                    response = f"{get_all_posts()}"
+            if resource == "categories":
+                if id is not None:
+                    response = f"{get_single_category(id)}"
+                else:
+                    response = f"{get_all_categories()}"
+
+        self.wfile.write(response.encode())
 
     def do_POST(self):
         self._set_headers(201)
@@ -76,7 +89,10 @@ class HandleRequests(BaseHTTPRequestHandler):
         new_item = None
         if resource == "register":
             new_item = register_user(post_body)
-            
+
+        if resource == "tags":
+            new_item = create_tag(post_body)
+
         if resource == "login":
             new_item = get_users_by_login(
                 post_body['email'], post_body['password'])
@@ -84,9 +100,7 @@ class HandleRequests(BaseHTTPRequestHandler):
         if resource == "posts":
             new_item = add_post(post_body)
 
-
         self.wfile.write(new_item.encode())
-        
 
     def do_PUT(self):
         self._set_headers(204)
@@ -101,7 +115,19 @@ class HandleRequests(BaseHTTPRequestHandler):
 
         self.wfile.write("".encode())
 
-            
+    def do_DELETE(self):
+        # Set a 204 response code
+        self._set_headers(204)
+
+        # Parse the URL
+        (resource, id) = self.parse_url(self.path)
+
+        # Delete a single tag from the list
+        if resource == "tags":
+            delete_tag(id)
+
+        self.wfile.write("".encode())
+
 
 def main():
     host = ''

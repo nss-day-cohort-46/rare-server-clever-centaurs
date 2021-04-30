@@ -125,7 +125,7 @@ class HandleRequests(BaseHTTPRequestHandler):
 
         success = False
 
-            # edit a single post from the list
+            # edit a single post from the list check
         if resource == "tags":
             success =update_tag(id, post_body)
 

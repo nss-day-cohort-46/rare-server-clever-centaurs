@@ -1,7 +1,8 @@
+from categories.request import delete_category
 import json
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from tags import get_all_tags, create_tag, delete_tag, get_single_tag, update_tag
-from categories import get_all_categories, get_single_category
+from categories import get_all_categories, get_single_category, create_category, update_category
 from posts.request import get_posts_by_user_id
 from posts import (get_all_posts, get_post_by_id, update_post, add_post)
 from users import register_user, get_users_by_login
@@ -73,18 +74,16 @@ class HandleRequests(BaseHTTPRequestHandler):
                 if id is not None:
                     response = f"{get_single_category(id)}"
                 else:
-                    response = f"{get_all_categories()}"  
+                    response = f"{get_all_categories()}"
             if resource == "posts":
-                if id is not None: 
+                if id is not None:
                     response = f"{get_post_by_id(id)}"
                 else:
                     response = f"{get_all_posts()}"
         elif len(parsed) == 3:
             (resource, key, value) = parsed
             if resource == "posts":
-                    response = f"{get_posts_by_user_id(value)}"
-        
-
+                response = f"{get_posts_by_user_id(value)}"
 
         self.wfile.write(response.encode())
 
@@ -107,6 +106,9 @@ class HandleRequests(BaseHTTPRequestHandler):
             new_item = get_users_by_login(
                 post_body['email'], post_body['password'])
 
+        if resource == "categories":
+            new_item = create_category(post_body)
+
         if resource == "posts":
             new_item = add_post(post_body)
 
@@ -122,6 +124,19 @@ class HandleRequests(BaseHTTPRequestHandler):
         success = False
         if resource == "posts":
             success = update_post(id, post_body)
+        if resource == "tags":
+            success = update_tag(id, post_body)
+
+            if success:
+                self._set_headers(204)
+            else:
+                self._set_headers(404)
+        if resource == "categories":
+            success = update_category(id, post_body)
+            if success:
+                self._set_headers(204)
+            else:
+                self._set_headers(404)
 
         self.wfile.write("".encode())
 
@@ -135,32 +150,11 @@ class HandleRequests(BaseHTTPRequestHandler):
         # Delete a single tag from the list
         if resource == "tags":
             delete_tag(id)
+        if resource == "categories":
+            delete_category(id)
 
         self.wfile.write("".encode())
 
-    
-    def do_PUT(self):
-        self._set_headers(204)
-        content_len = int(self.headers.get('content-length', 0))
-        post_body = self.rfile.read(content_len)
-        post_body = json.loads(post_body)
-
-        # Parse the URL
-        (resource, id) = self.parse_url(self.path)
-
-        success = False
-
-            # edit a single post from the list check
-        if resource == "tags":
-            success =update_tag(id, post_body)
-
-            if success:
-                self._set_headers(204)
-            else:
-                self._set_headers(404)
-
-        # Encode the new animal and send in response
-        self.wfile.write("".encode())
 
 def main():
     host = ''
